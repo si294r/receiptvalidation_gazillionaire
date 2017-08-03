@@ -51,5 +51,12 @@ if ($array_json["status"] == 0) {
 }
 
 // 2. Save to database inbox - TODO
+if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
+    // TODO check database period
+    
+    $response = array("error" => 0, "message" => "");
+} else {
+    $response = array("error" => 1, "message" => $product_id . " is not registered in receipt data");
+}
 
-return $array_json;
+return $response;
