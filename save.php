@@ -39,7 +39,7 @@ if ($array_json["status"] == 0) {
         mkdir($bundle_dir);
     }
     foreach ($array_json["receipt"]["in_app"] as $k=>$v) {
-        $date_dir = $dir . "/" . substr($v["purchase_date"], 0, 19);
+        $date_dir = $bundle_dir . "/" . substr($v["purchase_date"], 0, 19);
         $date_dir = str_replace(array("-", " ", ":"), "", $date_dir);
         if (!is_dir($date_dir)) {
             mkdir($date_dir);
