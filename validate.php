@@ -30,7 +30,7 @@ if ($array_json["status"] == 0) {
     if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
         
         // TODO check database 
-        $already_purchase = true;
+        $already_purchase = false;
         $connection = new PDO(
             "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
             $myuser, $mypass
@@ -45,7 +45,11 @@ if ($array_json["status"] == 0) {
                 $statement1 = $connection->prepare($sql);
                 $statement1->bindParam(":transaction_id", $v['transaction_id']);
                 $row = $statement1->fetch(PDO::FETCH_ASSOC);
-                var_dump($row);
+                
+                if ($row) {
+                    $already_purchase = true;
+                    break;
+                }
                 
             }
         }
