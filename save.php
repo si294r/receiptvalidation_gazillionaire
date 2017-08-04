@@ -3,8 +3,10 @@
 include("config.php");
 
 $json = json_decode($input, true);
+$transaction_id = $json["transaction_id"];
 $product_id = $json["product_id"];
-$value = $json["value"];
+$product_type = $json["product_type"];
+$product_value = $json["product_value"];
 $facebook_id = $json["facebook_id"];
 $device_id = $json["device_id"];
 $receipt_data = $json["receipt_data"];
@@ -27,9 +29,10 @@ $result = file_get_contents($url_receipt_validation, null, stream_context_create
 );
 $array_json = json_decode($result, TRUE);
 
-// 1. Save file local
-$data_dir = "data";
 if ($array_json["status"] == 0) {
+    
+    // 1. Save file local
+    $data_dir = "data";
     $type_dir = $data_dir . "/" . $array_json["receipt"]["receipt_type"];
     if (!is_dir($type_dir)) {
         mkdir($type_dir);
@@ -48,15 +51,38 @@ if ($array_json["status"] == 0) {
         $file_iap = $date_dir . "/" . $v["transaction_id"]; 
         file_put_contents($file_iap, json_encode($v));
     }
-}
-
-// 2. Save to database inbox - TODO
-if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
-    // TODO check database period
     
-    $response = array("error" => 0, "message" => "");
+    // 2. Save payment transaction to database inbox - TODO
+    if (in_array($transaction_id, array_column($array_json["receipt"]["in_app"], "transaction_id"))) {
+        
+        $key = array_search($transaction_id, array_column($array_json["receipt"]["in_app"], "transaction_id"));
+        $receipt_transaction = json_encode($array_json["receipt"]["in_app"][$key]); 
+        
+        $connection = new PDO(
+            "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
+            $myuser, $mypass
+        );
+
+        $sql = "INSERT IGNORE INTO transaction (transaction_id, product_id, product_type, product_value, facebook_id, device_id, receipt_data) 
+                VALUES (:transaction_id, :product_id, :product_type, :product_value, :facebook_id, :device_id, :receipt_data)";
+        
+        $statement1 = $connection->prepare($sql1);
+        $statement1->bindParam(":transaction_id", $transaction_id);
+        $statement1->bindParam(":product_id", $product_id);
+        $statement1->bindParam(":product_type", $product_type);
+        $statement1->bindParam(":product_value", $product_value);
+        $statement1->bindParam(":facebook_id", $facebook_id);
+        $statement1->bindParam(":device_id", $device_id);
+        $statement1->bindParam(":receipt_data", $receipt_transaction);
+        $statement1->execute();
+
+        $response = array("error" => 0, "message" => "");
+    } else {
+        $response = array("error" => 1, "message" => "transaction_id: $transaction_id with product_id: $product_id is not registered in receipt data");
+    }
+
 } else {
-    $response = array("error" => 1, "message" => $product_id . " is not registered in receipt data");
+    $response = array("error" => 1, "message" => "Receipt Validation Failed. Status : " . $array_json["status"]);
 }
 
 return $response;

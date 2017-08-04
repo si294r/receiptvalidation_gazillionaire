@@ -26,13 +26,15 @@ $result = file_get_contents($url_receipt_validation, null, stream_context_create
 );
 $array_json = json_decode($result, TRUE);
 
-
-if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
-    // TODO check database period
-    
-    $response = array("error" => 1, "message" => $product_id . " already purchase");
+if ($array_json["status"] == 0) {
+    if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
+        // TODO check database 
+        $response = array("error" => 1, "message" => $product_id . " already purchase");
+    } else {
+        $response = array("error" => 0, "message" => "");
+    }
 } else {
-    $response = array("error" => 0, "message" => "");
+    $response = array("error" => 1, "message" => "Receipt Validation Failed. Status : " . $array_json["status"]);    
 }
 
 return $response;
