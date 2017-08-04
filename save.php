@@ -76,7 +76,8 @@ if ($array_json["status"] == 0) {
         $statement1->bindParam(":receipt_data", $receipt_transaction);
         $statement1->execute();
 
-        // TODO - integrate to inbox
+//        TODO - define expired_date still manual
+//        TODO - integrate to inbox
         
         $response = array("error" => 0, "message" => "");
     } else {

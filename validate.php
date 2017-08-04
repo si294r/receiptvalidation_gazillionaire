@@ -40,14 +40,14 @@ if ($array_json["status"] == 0) {
                 $arr_transaction_id[] = $v['transaction_id'];                
             }
         }
-        $sql = "SELECT * FROM transactions WHERE transaction_id IN ('" . implode("','", $arr_transaction_id) . "') "
+        $sql = "SELECT transaction_id FROM transactions "
+                . "WHERE transaction_id IN ('" . implode("','", $arr_transaction_id) . "') "
                 . "AND NOW() <= COALESCE(expired_date, NOW())";
         $statement1 = $connection->prepare($sql);
         $statement1->execute();
         $row = $statement1->fetch(PDO::FETCH_ASSOC);
 
-//        TODO - define expired_date still manual
-        var_dump($row);
+//        var_dump($row);
         if ($row) {
             $response = array("error" => 1, "message" => $product_id . " already purchase");
         } else {
