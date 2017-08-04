@@ -46,6 +46,7 @@ if ($array_json["status"] == 0) {
                 $statement1->bindParam(":transaction_id", $v['transaction_id']);
                 $row = $statement1->fetch(PDO::FETCH_ASSOC);
                 
+                var_dump($row);
                 if ($row) {
                     $already_purchase = true;
                     break;
