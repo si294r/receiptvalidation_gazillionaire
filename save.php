@@ -63,10 +63,10 @@ if ($array_json["status"] == 0) {
             $myuser, $mypass
         );
 
-        $sql = "INSERT INTO transactions (transaction_id, product_id, product_type, product_value, facebook_id, device_id, receipt_data) 
+        $sql = "INSERT IGNORE INTO transactions (transaction_id, product_id, product_type, product_value, facebook_id, device_id, receipt_data) 
                 VALUES (:transaction_id, :product_id, :product_type, :product_value, :facebook_id, :device_id, :receipt_data)";
         
-        $statement1 = $connection->prepare($sql1);
+        $statement1 = $connection->prepare($sql);
         $statement1->bindParam(":transaction_id", $transaction_id);
         $statement1->bindParam(":product_id", $product_id);
         $statement1->bindParam(":product_type", $product_type);
