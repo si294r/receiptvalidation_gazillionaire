@@ -52,7 +52,7 @@ if ($array_json["status"] == 0) {
         file_put_contents($file_iap, json_encode($v));
     }
     
-    // 2. Save payment transaction to database inbox - TODO
+    // 2. Save payment transaction to database  
     if (in_array($transaction_id, array_column($array_json["receipt"]["in_app"], "transaction_id"))) {
         
         $key = array_search($transaction_id, array_column($array_json["receipt"]["in_app"], "transaction_id"));
@@ -76,6 +76,8 @@ if ($array_json["status"] == 0) {
         $statement1->bindParam(":receipt_data", $receipt_transaction);
         $statement1->execute();
 
+        // TODO - integrate to inbox
+        
         $response = array("error" => 0, "message" => "");
     } else {
         $response = array("error" => 1, "message" => "transaction_id: $transaction_id with product_id: $product_id is not registered in receipt data");

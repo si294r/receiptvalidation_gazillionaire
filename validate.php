@@ -28,8 +28,32 @@ $array_json = json_decode($result, TRUE);
 
 if ($array_json["status"] == 0) {
     if (in_array($product_id, array_column($array_json["receipt"]["in_app"], "product_id"))) {
+        
         // TODO check database 
-        $response = array("error" => 1, "message" => $product_id . " already purchase");
+        $already_purchase = false;
+        $connection = new PDO(
+            "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
+            $myuser, $mypass
+        );
+        
+        foreach ($array_json["receipt"]["in_app"] as $k=>$v) {
+            if ($v['product_id'] == $product_id) {
+                
+                $sql = "SELECT * FROM transactions WHERE transaction_id = :transaction_id "
+                        . "AND NOW() <= COALESCE(expired_date, NOW())";
+        
+                $statement1 = $connection->prepare($sql);
+                $statement1->bindParam(":transaction_id", $v['transaction_id']);
+                $row = $statement1->fetch(PDO::FETCH_ASSOC);
+                var_dump($row);
+                
+            }
+        }
+        if ($already_purchase) { 
+            $response = array("error" => 1, "message" => $product_id . " already purchase");
+        } else {
+            $response = array("error" => 0, "message" => "");
+        }
     } else {
         $response = array("error" => 0, "message" => "");
     }
