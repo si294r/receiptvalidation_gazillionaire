@@ -44,6 +44,7 @@ if ($array_json["status"] == 0) {
         
                 $statement1 = $connection->prepare($sql);
                 $statement1->bindParam(":transaction_id", $v['transaction_id']);
+                $statement1->execute();
                 $row = $statement1->fetch(PDO::FETCH_ASSOC);
                 
                 var_dump($v['transaction_id']);
