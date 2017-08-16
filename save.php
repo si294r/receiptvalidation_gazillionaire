@@ -76,7 +76,7 @@ if ($array_json["status"] == 0) {
         $statement1->bindParam(":receipt_data", $receipt_transaction);
         $statement1->execute();
 
-//        TODO - define expired_date still manual
+//        TODO - define expired_date 
         $sql = "UPDATE transactions SET expired_date = date_add(purchase_date, interval 30 day) 
                 WHERE transaction_id = :transaction_id";
         $statement1 = $connection->prepare($sql);
