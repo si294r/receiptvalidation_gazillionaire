@@ -77,7 +77,20 @@ if ($array_json["status"] == 0) {
         $statement1->execute();
 
 //        TODO - define expired_date still manual
+        $sql = "UPDATE transactions SET expired_date = date_add(purchase_date, interval 30 day) 
+                WHERE transaction_id = :transaction_id";
+        $statement1 = $connection->prepare($sql);
+        $statement1->bindParam(":transaction_id", $transaction_id);
+        $statement1->execute();
+        
 //        TODO - integrate to inbox
+        $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status)
+                VALUES ('gift', 'Subscription', 'Subcription', :data, :target_device, :target_fb, 'All', 1)";
+        $statement1 = $connection->prepare($sql);
+        $statement1->bindParam(":data", $product_value);
+        $statement1->bindParam(":target_device", $device_id);
+        $statement1->bindParam(":target_fb", $facebook_id);
+        $statement1->execute();
         
         $response = array("error" => 0, "message" => "");
     } else {
