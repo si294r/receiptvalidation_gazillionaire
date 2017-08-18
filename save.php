@@ -7,6 +7,8 @@ $transaction_id = $json["transaction_id"];
 $product_id = $json["product_id"];
 $product_type = $json["product_type"];
 $product_value = $json["product_value"];
+$interval_value = is_numeric($json["interval_value"]) ? $json["interval_value"] : 1;
+$interval_unit = in_array($json["interval_unit"], array("day", "hour", "minute")) ? $json["interval_unit"] : "day";
 $facebook_id = $json["facebook_id"];
 $device_id = $json["device_id"];
 $receipt_data = $json["receipt_data"];
@@ -76,21 +78,33 @@ if ($array_json["status"] == 0) {
         $statement1->bindParam(":receipt_data", $receipt_transaction);
         $statement1->execute();
 
-//        TODO - define expired_date 
-        $sql = "UPDATE transactions SET expired_date = date_add(purchase_date, interval 30 day) 
-                WHERE transaction_id = :transaction_id";
-        $statement1 = $connection->prepare($sql);
-        $statement1->bindParam(":transaction_id", $transaction_id);
-        $statement1->execute();
-        
-//        TODO - integrate to inbox
-        $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status)
-                VALUES ('gift', 'Daily Crystals for a month', 'Free Crystal', :data, :target_device, :target_fb, 'All', 1)";
-        $statement1 = $connection->prepare($sql);
-        $statement1->bindParam(":data", $product_value);
-        $statement1->bindParam(":target_device", $device_id);
-        $statement1->bindParam(":target_fb", $facebook_id);
-        $statement1->execute();
+        if ($product_type == "Subscription") {
+            
+            $sql = "UPDATE transactions SET expired_date = date_add(purchase_date, interval $interval_value $interval_unit) 
+                    WHERE transaction_id = :transaction_id";
+            $statement1 = $connection->prepare($sql);
+            $statement1->bindParam(":transaction_id", $transaction_id);
+            $statement1->execute();
+
+//            TODO - integrate to inbox
+            $union = [];
+            for ($i = 0; $i< $interval_value; $i++) {
+                $union[] = "SELECT ".$i." as col";
+            }
+            $sql_union = implode(" UNION ", $union);
+            $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status)
+                    SELECT 'gift', 'Subscribtion Free Crystals', 'Free Crystals', :data, :target_device, :target_fb, 'All', 1,
+                        date_add(purchase_date, interval t2.col $interval_unit), date_add(purchase_date, interval $interval_value $interval_unit)
+                    FROM transactions,
+                    ($sql_union) t2
+                    WHERE transaction_id = :transaction_id ";
+            $statement1 = $connection->prepare($sql);
+            $statement1->bindParam(":data", $product_value);
+            $statement1->bindParam(":target_device", $device_id);
+            $statement1->bindParam(":target_fb", $facebook_id);
+            $statement1->bindParam(":transaction_id", $transaction_id);
+            $statement1->execute();
+        }
         
         $response = array("error" => 0, "message" => "");
     } else {
