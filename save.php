@@ -92,7 +92,7 @@ if ($array_json["status"] == 0) {
                 $union[] = "SELECT ".$i." as col";
             }
             $sql_union = implode(" UNION ", $union);
-            $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status)
+            $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status, valid_from, valid_to)
                     SELECT 'gift', 'Subscribtion Free Crystals', 'Free Crystals', :data, :target_device, :target_fb, 'All', 1,
                         date_add(purchase_date, interval t2.col $interval_unit), date_add(purchase_date, interval $interval_value $interval_unit)
                     FROM transactions,
