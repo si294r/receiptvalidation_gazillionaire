@@ -87,18 +87,28 @@ if ($array_json["status"] == 0) {
             $statement1->execute();
 
 //            TODO - integrate to inbox
+            if (strpos($product_value, "CASH") !== FALSE) {
+                $title = STR_ALERT_INBOX_TITLE4;
+                $caption = STR_ALERT_INBOX_CAPTION4;
+            } else {
+                $title = STR_ALERT_INBOX_TITLE1;
+                $caption = STR_ALERT_INBOX_CAPTION1;
+            }
+            
             $union = [];
             for ($i = 0; $i< $interval_value; $i++) {
                 $union[] = "SELECT ".$i." as col";
             }
             $sql_union = implode(" UNION ", $union);
             $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status, valid_from, valid_to)
-                    SELECT 'gift', 'Subscribtion Free Crystals', 'Free Crystals', :data, :target_device, :target_fb, 'All', 1,
+                    SELECT 'gift', :title, :caption, :data, :target_device, :target_fb, 'All', 1,
                         date_add(purchase_date, interval t2.col $interval_unit), date_add(purchase_date, interval $interval_value $interval_unit)
                     FROM transactions,
                     ($sql_union) t2
                     WHERE transaction_id = :transaction_id ";
             $statement1 = $connection->prepare($sql);
+            $statement1->bindParam(":title", $title);
+            $statement1->bindParam(":caption", $caption);
             $statement1->bindParam(":data", $product_value);
             $statement1->bindParam(":target_device", $device_id);
             $statement1->bindParam(":target_fb", $facebook_id);
