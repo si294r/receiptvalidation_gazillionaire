@@ -60,6 +60,10 @@ if ($array_json["status"] == 0) {
         $key = array_search($transaction_id, array_column($array_json["receipt"]["in_app"], "transaction_id"));
         $receipt_transaction = json_encode($array_json["receipt"]["in_app"][$key]); 
         
+        if ($product_type == "Subscription") {
+            $product_value = $product_value.",CRYSTAL";
+        }
+        
         $connection = new PDO(
             "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
             $myuser, $mypass
