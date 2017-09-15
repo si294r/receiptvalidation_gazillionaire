@@ -4,8 +4,8 @@ include("config.php");
 
 $json = json_decode($input, true);
 $product_id = $json["product_id"];
-$facebook_id = $json["facebook_id"];
-$device_id = $json["device_id"];
+//$facebook_id = $json["facebook_id"];
+//$device_id = $json["device_id"];
 $receipt_data = $json["receipt_data"];
 
 $data_string = json_encode(array(

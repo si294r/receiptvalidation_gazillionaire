@@ -1,6 +1,7 @@
 <?php
 
 include("config.php");
+include_once('function.php');
 
 $json = json_decode($input, true);
 $transaction_id = $json["transaction_id"];
@@ -9,7 +10,8 @@ $product_type = $json["product_type"];
 $product_value = $json["product_value"];
 $interval_value = is_numeric($json["interval_value"]) ? $json["interval_value"] : 1;
 $interval_unit = in_array($json["interval_unit"], array("day", "hour", "minute")) ? $json["interval_unit"] : "day";
-$facebook_id = $json["facebook_id"];
+//$facebook_id = $json["facebook_id"];
+$facebook_id = "";
 $device_id = $json["device_id"];
 $receipt_data = $json["receipt_data"];
 
@@ -68,6 +70,9 @@ if ($array_json["status"] == 0) {
             "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
             $myuser, $mypass
         );
+
+        // change device_id to user_id
+        $device_id = get_user_id($device_id);
 
         $sql = "INSERT IGNORE INTO transactions (transaction_id, product_id, product_type, product_value, facebook_id, device_id, receipt_data) 
                 VALUES (:transaction_id, :product_id, :product_type, :product_value, :facebook_id, :device_id, :receipt_data)";
