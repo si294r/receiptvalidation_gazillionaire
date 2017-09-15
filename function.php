@@ -23,7 +23,7 @@ function get_user_id($device_id)
         $row = $statement1->fetch(PDO::FETCH_ASSOC);
 
         $user_id = $row['user_id'];    
-        apcu_store($key, $user_id);
+        apcu_store($key, $user_id, 900);
     }
     
     return $user_id;
