@@ -2,9 +2,9 @@
 
 function get_user_id($device_id) 
 {
-    global $connection;
+    global $connection, $IS_DEVELOPMENT;
     
-    $key = "gazil_user_" . $device_id;
+    $key = $IS_DEVELOPMENT ? "gazdev_user_" . $device_id : "gaz_user_" . $device_id;
     $user_id = apcu_fetch($key);
 
     if ($user_id === FALSE) {        
