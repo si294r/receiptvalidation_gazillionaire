@@ -106,11 +106,11 @@ if ($array_json["status"] == 0) {
             
             $union = [];
             for ($i = 0; $i< $interval_value; $i++) {
-                $union[] = "SELECT ".$i." as col";
+                $union[] = "SELECT '$interval_unit' as unit, $i as col, $interval_value as unit_total";
             }
             $sql_union = implode(" UNION ", $union);
             $sql = "INSERT INTO master_inbox (type, header, message, data, target_device, target_fb, os, status, valid_from)
-                    SELECT 'reward', :title, :caption, :data, :target_device, :target_fb, 'All', 1,
+                    SELECT 'reward', :title, :caption, CONCAT(:data, ',', t2.unit, ',', t2.col+1, ',', t2.unit_total), :target_device, :target_fb, 'All', 1,
                         date_add(purchase_date, interval t2.col $interval_unit)
                     FROM transactions,
                     ($sql_union) t2
