@@ -63,7 +63,7 @@ if ($array_json["status"] == 0) {
         $receipt_transaction = json_encode($array_json["receipt"]["in_app"][$key]); 
         
         if ($product_type == "Subscription") {
-            $product_value = $product_value.",CRYSTAL";
+            $product_value = $product_value.",CRYSTAL,IAP_SUBSCRIPTION";
         }
         
         $connection = new PDO(
