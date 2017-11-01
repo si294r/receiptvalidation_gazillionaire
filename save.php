@@ -14,14 +14,14 @@ $interval_unit = in_array($json["interval_unit"], array("day", "hour", "minute")
 $facebook_id = "";
 $device_id = $json["device_id"];
 $receipt_data = $json["receipt_data"];
-$platform = isset($json["platform"]) ? $json["platform"] : "iOS";
+$os = isset($json["os"]) ? $json["os"] : "iOS";
 
-if ($platform == "iOS") {
+if ($os == "iOS") {
     include 'save_ios.php';
-} else if ($platform == "Android") {
+} else if ($os == "Android") {
     include 'save_android.php';
 } else {
-    $response = array("error" => 1, "message" => "platform is invalid!");
+    $response = array("error" => 1, "message" => "$.os is invalid!");
 }
 
 return $response;
