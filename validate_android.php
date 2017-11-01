@@ -7,7 +7,7 @@ $connection = new PDO(
     $myuser, $mypass
 );
 
-$sql = "SELECT transaction_id FROM transactions "
+$sql = "SELECT transaction_id FROM transactions_android "
         . "WHERE device_id = :device_id AND product_id = :product_id "
         . "AND $filter_time";
 $statement1 = $connection->prepare($sql);

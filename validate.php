@@ -1,6 +1,7 @@
 <?php
 
 include("config.php");
+include_once('function.php');
 
 $json = json_decode($input, true);
 $product_id = $json["product_id"];
