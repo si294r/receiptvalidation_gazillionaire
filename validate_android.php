@@ -16,7 +16,7 @@ $statement1->bindParam(":product_id", $product_id);
 $statement1->execute();
 $row = $statement1->fetch(PDO::FETCH_ASSOC);
 
-//        var_dump($row);
+//var_dump($row);
 if ($row) {
     $response = array("error" => 1, "message" => $product_id . " already purchase");
 } else {
