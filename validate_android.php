@@ -7,6 +7,9 @@ $connection = new PDO(
     $myuser, $mypass
 );
 
+// change device_id to user_id
+$device_id = get_user_id($device_id);
+
 $sql = "SELECT transaction_id FROM transactions_android "
         . "WHERE device_id = :device_id AND product_id = :product_id "
         . "AND $filter_time";
