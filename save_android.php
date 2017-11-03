@@ -34,7 +34,7 @@ $statement1->bindParam(":product_type", $product_type);
 $statement1->bindParam(":product_value", $product_value);
 $statement1->bindParam(":facebook_id", $facebook_id);
 $statement1->bindParam(":device_id", $device_id);
-$statement1->bindParam(":receipt_data", $receipt_transaction);
+$statement1->bindParam(":receipt_data", $receipt_data);
 $statement1->execute();
 
 if ($product_type == "Subscription") {
