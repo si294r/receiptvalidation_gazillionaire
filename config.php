@@ -4,6 +4,13 @@ include("/var/www/mysql-config2.php");
 
 $mydatabase = $IS_DEVELOPMENT ? "gazillionairedev" : "gazillionaire";
 
+$url_static_time = "http://alegrium5.alegrium.com/gazillionaire/cloudsave/";
+
+$aws_s3_appname = "gazillionaire";
+
+define('CACHE_USER_DEV', "gazdev_user_");
+define('CACHE_USER', "gaz_user_");
+
 $url_sandbox = "https://sandbox.itunes.apple.com/verifyReceipt";
 $url_production = "https://buy.itunes.apple.com/verifyReceipt";
 

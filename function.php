@@ -4,7 +4,7 @@ function get_user_id($device_id)
 {
     global $connection, $IS_DEVELOPMENT;
     
-    $key = $IS_DEVELOPMENT ? "gazdev_user_" . $device_id : "gaz_user_" . $device_id;
+    $key = $IS_DEVELOPMENT ? CACHE_USER_DEV . $device_id : CACHE_USER . $device_id;
     $user_id = apcu_fetch($key);
 
     if ($user_id === FALSE) {        
@@ -31,13 +31,13 @@ function get_user_id($device_id)
 
 function get_filter_time()
 {
-    global $IS_DEVELOPMENT;
+    global $IS_DEVELOPMENT, $url_static_time;
     
     if ($IS_DEVELOPMENT == false) {
         $filter_time = "NOW() <= COALESCE(expired_date, NOW())"; 
     } else {
         $iservice = "gettime-dev";
-        $result_gettime = file_get_contents('http://alegrium5.alegrium.com/gazillionaire/cloudsave/?'.$iservice, null, stream_context_create(
+        $result_gettime = file_get_contents($url_static_time.'?'.$iservice, null, stream_context_create(
                 array(
                     'http' => array(
                         'method' => 'POST',

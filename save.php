@@ -1,5 +1,8 @@
 <?php
 
+require '/var/www/vendor/autoload.php';
+include '/var/www/redshift-config2.php';
+
 include("config.php");
 include_once('function.php');
 

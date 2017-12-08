@@ -1,5 +1,7 @@
 <?php
 
+use Aws\S3\S3Client;
+
 $data_string = json_encode(array(
     "password" => SHARED_SECRET,
     "receipt-data" => $receipt_data
@@ -20,25 +22,24 @@ $array_json = json_decode($result, TRUE);
 
 if ($array_json["status"] == 0) {
     
-    // 1. Save file local
-    $data_dir = "data";
-    $type_dir = $data_dir . "/" . $array_json["receipt"]["receipt_type"];
-    if (!is_dir($type_dir)) {
-        mkdir($type_dir);
-    }
-    $bundle_dir = $type_dir . "/" . $array_json["receipt"]["bundle_id"];
-    if (!is_dir($bundle_dir)) {
-        mkdir($bundle_dir);
-    }
+    // 1. Save file to S3
+    $s3ClientS3 = new S3Client(array(
+        'credentials' => array(
+            'key' => $aws_access_key_id,
+            'secret' => $aws_secret_access_key
+        ),
+        "region" => "us-east-1",
+        "version" => "2006-03-01"
+    ));
+
+    $receipt_type = $array_json["receipt"]["receipt_type"];
+    
     foreach ($array_json["receipt"]["in_app"] as $k=>$v) {
-        $date_dir = $bundle_dir . "/" . substr($v["purchase_date"], 0, 19);
-        $date_dir = str_replace(array("-", " ", ":"), "", $date_dir);
-        if (!is_dir($date_dir)) {
-            mkdir($date_dir);
-        }
-        
-        $file_iap = $date_dir . "/" . $v["transaction_id"]; 
-        file_put_contents($file_iap, json_encode($v));
+        $s3ClientS3->putObject(array(
+            'Bucket' => "alegrium-iap",
+            'Key'    => "$aws_s3_appname/iOS/$receipt_type/{$v["transaction_id"]}",
+            'Body'   => json_encode($v)
+        ));
     }
     
     // 2. Save payment transaction to database  
